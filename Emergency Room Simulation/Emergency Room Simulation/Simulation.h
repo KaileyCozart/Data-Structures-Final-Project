@@ -10,6 +10,8 @@
 #include "Untreated_Patient_Queue.h"
 #include "Treated_Patient_Queue.h"
 
+Random my_random;
+
 class Simulation {
 
 private:
