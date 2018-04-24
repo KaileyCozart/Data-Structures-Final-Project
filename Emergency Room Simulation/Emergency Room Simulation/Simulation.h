@@ -2,8 +2,8 @@
 #ifndef SIMULATION_H_
 #define SIMULATION_H_
 
-#include<iostream>
-#include<queue>
+#include <iostream>
+#include <queue>
 #include "Nurse.h"
 #include "Doctor.h"
 #include "Patient.h"
@@ -75,7 +75,7 @@ public:
 	void run_simulation() {
 		for (clock = 0; clock < total_time; ++clock) {
 			// Check to see if a new patient appears at this minute
-			// Somehow update the queue so that it's by priority
+			// Update the queue so that it's by priority
 			untreated_patient_queue->update(clock);
 
 			// See if the doctor queue is empty
