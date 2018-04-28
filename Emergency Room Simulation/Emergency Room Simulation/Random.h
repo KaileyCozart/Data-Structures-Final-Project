@@ -3,6 +3,7 @@
 #define RANDOM_H_
 
 /* Taken from airplane simulator */
+#include <iostream>
 #include <cstdlib>
 #include <ctime>
 

@@ -3,7 +3,12 @@
 #define SIMULATION_H_
 
 #include <iostream>
+#include <fstream>
+#include <sstream>
 #include <queue>
+#include <vector>
+#include <map>
+#include <string>
 #include "Nurse.h"
 #include "Doctor.h"
 #include "Patient.h"
@@ -21,8 +26,11 @@ private:
 	double average_visit_time;
 	int total_treatment_time;
 
-	Doctor* doctor_queue;
-	Nurse* nurse_queue;
+	int number_of_doctors;
+	int number_of_nurses;
+
+	std::vector<Staff> staff_vector;
+	std::map<int, std::string> civilian_map;
 	UntreatedPatientQueue* untreated_patient_queue;
 	TreatedPatientQueue* treated_patient_queue;
 
@@ -56,8 +64,6 @@ private:
 public:
 
 	Simulation() {
-		doctor_queue = new Doctor();
-		nurse_queue = new Nurse();
 		untreated_patient_queue = new UntreatedPatientQueue();
 		treated_patient_queue = new TreatedPatientQueue();
 	}
@@ -66,13 +72,14 @@ public:
 		std::cout << "Welcome to the Emergency Room Simulator for 273ville, population 2000." << std::endl;
 		int average_number_of_patients = read_int("Please enter the average number of patients that enter the emergency room per hour: ", 1, 60);
 		double rate_of_arrival = average_number_of_patients / 60.0;
-		int number_of_doctors = read_int("Please enter the number of doctors that are working: ", 1, 10);
-		int number_of_nurses = read_int("Please enter the number of nurses that are working: ", 1, 10);
+		number_of_doctors = read_int("Please enter the number of doctors that are working: ", 1, 10);
+		number_of_nurses = read_int("Please enter the number of nurses that are working: ", 1, 10);
 		int total_time = 60 * 24 * 7;
 		// Push correct number of doctors and nurses into the vectors
 	}
 
 	void run_simulation() {
+		create_staff();
 		for (clock = 0; clock < total_time; ++clock) {
 			// Check to see if a new patient appears at this minute
 			// Update the queue so that it's by priority
@@ -102,6 +109,27 @@ public:
 			// Let user choose patient by name
 			// Or let user leave screen
 			// Display that patient's information an loop back
+		}
+	}
+
+	void create_staff() {
+		for (int i; i < number_of_doctors; i++) {
+			staff_vector.push_back(new Doctor(1, 20));
+		}
+		for (int j; j < number_of_nurses; j++) {
+			staff_vector.push_back(new Nurse(1, 10));
+		}
+	}
+
+	void creating_civilians() {
+		std::ifstream firstline("FirstNames.txt", std::ifstream::in);
+		std::ifstream secondline("LastNames.txt", std::ifstream::in);
+		std::string line;
+		for (int i; i < 2000; i++) {
+			std::string fullName;
+			strcpy(fullName, std::getline(firstline, line));
+			strcat(fullName, std::getline(secondline, line));
+			civilian_map[i] = fullName;
 		}
 	}
 

@@ -4,28 +4,12 @@
 #include <queue>
 #include "Random.h"
 
-class Nurse {
+class Nurse : public Staff {
 private:
 	int min_treatment_time = 1;
-	int max_treatment_time = 10;
-	std::queue<Patient> nurses_patient_queue;
-
+	int max_treatment_time = 20;
 public:
-	void set_treatment_time() {
-		// Randomize a treatment time
-		treatment_time = my_random.next_int(max_treatment_time);
-	}
-
-	void set_treated_patients_queue() {
-		// Add the treated patients to the treated patients queue
-	}
-
-	void update(int clock) {
-		if (nurses_patient_queue.empty()) { // Stat calculation for whether there is a new patient
-				// Push new patient with a certain clock
-		}
-	}
-
+	Nurse::Nurse(int min_treatment_time, int max_treatment_time) : Staff(min_treatment_time, max_treatment_time) {}
 };
 
 #endif NURSE_H_
