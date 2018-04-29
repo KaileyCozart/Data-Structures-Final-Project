@@ -3,6 +3,7 @@
 #define UNTREATED_PATIENT_QUEUE_H_
 #include "Random.h"
 #include "Patient.h"
+#include "Simulation.h"
 #include <iostream>
 #include <queue>
 #include <vector>
@@ -24,13 +25,26 @@ struct PatientComparator {
 class UntreatedPatientQueue {
 private:
 	double arrival_rate;
-	std::priority_queue<patient, std::vector<patient>, PatientComparator> untreated_patient_queue;
+	std::priority_queue<patient*, std::vector<patient*>, PatientComparator> untreated_patient_queue;
+	std::map<int, patient*> civilians;
 
 public:
-	UntreatedPatientQueue() {}
+	UntreatedPatientQueue(std::map<int, patient*> civilians) {
+		this->civilians = civilians;
+	}
 
 	void set_arrival_rate(double arrival_rate) {
 		this->arrival_rate = arrival_rate;
+	}
+
+	patient* get_top() {
+		return untreated_patient_queue.top();
+	}
+
+	patient* pop() {
+		patient* temp = untreated_patient_queue.top();
+		untreated_patient_queue.pop();
+		return temp;
 	}
 
 	void update(int clock) {
@@ -39,17 +53,35 @@ public:
 			if (newDouble < .7) {
 				// Push a new patient with current time and push severity number into the patient's severity vector
 				// Severity number between 1 and 10
-				untreated_patient_queue.push(new patient(clock));
+				int victimKey = my_random.next_int(2000);
+				patient* victim = civilians[victimKey];
+				int severity = my_random.next_int(10);
+				victim->set_priority(severity);
+				victim->add_severity(severity);
+				victim->set_arrival_time(clock);
+				untreated_patient_queue.push(victim);
 			}
 			else if (newDouble < .9 && newDouble > .7) {
 				// Push a new patient with current time and push severity number into the patient's severity vector
 				// Severity number between 11 and 15
-				untreated_patient_queue.push(new patient(clock));
+				int victimKey = my_random.next_int(2000);
+				patient* victim = civilians[victimKey];
+				int severity = my_random.int_range(11, 15);
+				victim->set_priority(severity);
+				victim->add_severity(severity);
+				victim->set_arrival_time(clock);
+				untreated_patient_queue.push(victim);
 			}
 			else {
 				// Push a new patient with current time and push severity number into the patient's severity vector
 				// Severity number between 16 and 20
-				untreated_patient_queue.push(new patient(clock));
+				int victimKey = my_random.next_int(2000);
+				patient* victim = civilians[victimKey];
+				int severity = my_random.int_range(16, 20);
+				victim->set_priority(severity);
+				victim->add_severity(severity);
+				victim->set_arrival_time(clock);
+				untreated_patient_queue.push(victim);
 			}
 		}
 	}
@@ -57,22 +89,3 @@ public:
 };
 
 #endif UNTREATED_PATIENT_QUEUE_H_
-
-
-/*
-
-int main() {
-
-	std::priority_queue<person, std::vector<person>, PersonComparator> p;
-	person tq("taeler", 21);
-	person kc("kailey", 18);
-	person bob("bob", 19);
-	p.push(tq);
-	p.push(kc);
-	p.push(bob);
-	print_queue_custom(p);
-
-	return 0;
-}
-
-*/

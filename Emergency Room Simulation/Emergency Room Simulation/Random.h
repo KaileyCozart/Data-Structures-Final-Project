@@ -2,7 +2,6 @@
 #ifndef RANDOM_H_
 #define RANDOM_H_
 
-/* Taken from airplane simulator */
 #include <iostream>
 #include <cstdlib>
 #include <ctime>
@@ -17,6 +16,11 @@ public:
 
 	Random(int seed) {
 		srand(seed);
+	}
+
+	// Returns number between upper and lower bounds
+	int int_range(int first, int second) {
+		return rand() % (second - first + 1) + first;
 	}
 
 	/** Returns a random integer in the range 0 – n. */

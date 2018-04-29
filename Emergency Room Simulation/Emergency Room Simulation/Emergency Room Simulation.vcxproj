@@ -23,7 +23,7 @@
     <ProjectGuid>{A021768B-5743-4ADA-8E4D-B5A9DA1127A4}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>EmergencyRoomSimulation</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.15063.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
