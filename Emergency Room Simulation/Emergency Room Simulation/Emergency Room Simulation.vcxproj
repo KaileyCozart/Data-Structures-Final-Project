@@ -155,7 +155,6 @@
     <ClInclude Include="Staff.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
-    <ClInclude Include="Treated_Patient_Queue.h" />
     <ClInclude Include="Untreated_Patient_Queue.h" />
   </ItemGroup>
   <ItemGroup>

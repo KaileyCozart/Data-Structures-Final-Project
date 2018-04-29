@@ -39,9 +39,6 @@
     <ClInclude Include="Untreated_Patient_Queue.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Treated_Patient_Queue.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Staff.h">
       <Filter>Header Files</Filter>
     </ClInclude>

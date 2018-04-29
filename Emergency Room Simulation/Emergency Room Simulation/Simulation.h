@@ -17,14 +17,11 @@
 #include "Doctor.h"
 #include "Patient.h"
 #include "Untreated_Patient_Queue.h"
-#include "Treated_Patient_Queue.h"
-
-Random my_random;
 
 class Simulation {
 
 private:
-	int total_time;
+	Random* my_random = new Random();
 	int clock;
 
 	double average_visit_time;
@@ -32,10 +29,12 @@ private:
 
 	int number_of_doctors;
 	int number_of_nurses;
+	int total_time = 60 * 24 * 7;
 
 	std::vector<Staff*> staff_vector;
+	std::vector<int> visit_times;
 	UntreatedPatientQueue* untreated_patient_queue;
-	TreatedPatientQueue* treated_patient_queue;
+	std::map<int, patient*> civilians;
 
 	// See if user's integer input is valid
 	int read_int(const std::string &prompt, int low, int high)
@@ -67,28 +66,21 @@ private:
 public:
 
 	Simulation() {
-		std::map<int, patient*> civilians = creating_civilians();
+		civilians = creating_civilians();
 		untreated_patient_queue = new UntreatedPatientQueue(civilians);
-		treated_patient_queue = new TreatedPatientQueue();
 	}
 
 	void user_input() {
 		std::cout << "Welcome to the Emergency Room Simulator for 273ville, population 2000." << std::endl;
-		int average_number_of_patients = read_int("Please enter the average number of patients that enter the emergency room per hour: ", 1, 60);
+		std::cout << "Please enter the average number of patients that enter the emergency room per hour: " << std::endl;
+		int average_number_of_patients;
+		std::cin >> average_number_of_patients;
 		double rate_of_arrival = average_number_of_patients / 60.0;
 		untreated_patient_queue->set_arrival_rate(rate_of_arrival);
-		number_of_doctors = read_int("Please enter the number of doctors that are working: ", 1, 10);
-		number_of_nurses = read_int("Please enter the number of nurses that are working: ", 1, 10);
-		int total_time = 60 * 24 * 7;
-		// Push correct number of doctors and nurses into the vectors
-		for (int i = 0; i < number_of_doctors; i++) {
-			Doctor* newDoctorP = new Doctor();
-			staff_vector.push_back(newDoctorP);
-		}
-		for (int j = 0; j < number_of_nurses; j++) {
-			Nurse* newNurseP = new Nurse();
-			staff_vector.push_back(newNurseP);
-		}
+		std::cout << "Please enter the number of doctors that are working: " << std::endl;
+		std::cin >> number_of_doctors;
+		std::cout << "Please enter the number of nurses that are working: " << std::endl;
+		std::cin >> number_of_nurses;
 	}
 
 	void run_simulation() {
@@ -101,15 +93,18 @@ public:
 			// See if the doctor queue is empty
 			// If they finish patient, push to finished_patient_queue
 			// If not, add patient with the highest number
+			// clear_doctor(clock);
 			find_doctor(clock);
 		}
 	}
 
 	void show_result() {
 		// Determine average visit time
-		average_visit_time = total_treatment_time / treated_patient_queue.size();
+		average_visit_time = calculate_average_wait_time();
 		std::cout << "The average visit time was " << average_visit_time << "." << std::endl;
-		int menu_options = read_int("Press 0 to exit. Press 1 to see the treated residents.", 0, 1);
+		std::cout << "Press 0 to exit. Press 1 to see the treated residents." << std::endl;
+		int menu_options;
+		std::cin >> menu_options;
 		// If they enter 0, the function call ends and the program terminates
 		// If they enter 1, the names are displayed
 		if (menu_options == 1) {
@@ -117,14 +112,19 @@ public:
 			// Let user choose patient by name
 			// Or let user leave screen
 			// Display that patient's information an loop back
+			for (size_t r = 0; r < civilians.size(); r++) {
+				if (civilians[r]->number_of_visits > 0) {
+					std::cout << r << " " << civilians[r]->name << std::endl;
+				}
+			}
 		}
 	}
 
 	void create_staff() {
-		for (int i; i < number_of_doctors; i++) {
+		for (int i = 0; i < number_of_doctors; i++) {
 			staff_vector.push_back(new Doctor());
 		}
-		for (int j; j < number_of_nurses; j++) {
+		for (int j = 0; j < number_of_nurses; j++) {
 			staff_vector.push_back(new Nurse());
 		}
 	}
@@ -149,11 +149,29 @@ public:
 
 	void find_doctor(int clock) {
 		for (int k = 0; k < (number_of_doctors + number_of_nurses); k++) {
-			bool isTrue = untreated_patient_queue->get_top()->get_priority() <= staff_vector[k]->get_max_severity;
-			if (staff_vector[k]->current_patient == NULL && isTrue) {
-				staff_vector[k]->current_patient = untreated_patient_queue->pop();
+			int time = (staff_vector[k]->update_staff(clock));
+			if (time != 0) {
+				visit_times.push_back(time);
+			}
+			if (!untreated_patient_queue->empty()) {
+				int patient_priority = untreated_patient_queue->get_top()->get_priority();
+				int staff_capability = staff_vector[k]->get_max_severity();
+				bool isTrue = patient_priority <= staff_capability;
+
+				if (staff_vector[k]->current_patient == NULL && isTrue) {
+					staff_vector[k]->current_patient = untreated_patient_queue->pop();
+					staff_vector[k]->set_treatment_time(clock);
+				}
 			}
 		}
+	}
+
+	double calculate_average_wait_time() {
+		int sum = 0;
+		for (size_t t = 0; t < visit_times.size(); t++) {
+			sum += visit_times[t];
+		}
+		return average_visit_time = (sum / visit_times.size());
 	}
 
 };
