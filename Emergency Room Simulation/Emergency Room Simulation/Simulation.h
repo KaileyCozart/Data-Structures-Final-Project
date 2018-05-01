@@ -3,7 +3,6 @@
 #define SIMULATION_H_
 
 #include <iostream>
-
 #include <stdio.h>
 #include <string.h>
 #include <fstream>
@@ -12,7 +11,6 @@
 #include <vector>
 #include <map>
 #include <string>
-
 #include "Nurse.h"
 #include "Doctor.h"
 #include "Patient.h"
@@ -21,22 +19,23 @@
 class Simulation {
 
 private:
+	
+	// Number variables
 	Random* my_random = new Random();
 	int clock;
-
 	double average_visit_time;
 	int total_treatment_time;
-
 	int number_of_doctors;
 	int number_of_nurses;
 	int total_time = 60 * 24 * 7;
-
+	
+	// Vectors and queues
 	std::vector<Staff*> staff_vector;
 	std::vector<int> visit_times;
 	UntreatedPatientQueue* untreated_patient_queue;
 	std::map<int, patient*> civilians;
 
-	// See if user's integer input is valid
+	// Check user input
 	int read_int(const std::string &prompt, int low, int high)
 	{
 		if (low >= high)
@@ -70,6 +69,7 @@ public:
 		untreated_patient_queue = new UntreatedPatientQueue(civilians);
 	}
 
+	/* Set simulation variables based on user input */
 	void user_input() {
 		std::cout << "---------- EMERGENCY ROOM SIMULATION ----------" << std::endl;
 		std::cout << " " << std::endl;
@@ -86,37 +86,31 @@ public:
 		std::cin >> number_of_nurses;
 	}
 
+	/* Create a clock and run the simulation for each tick */
 	void run_simulation() {
 		create_staff();
 		for (clock = 0; clock < total_time; ++clock) {
-			// Check to see if a new patient appears at this minute
-			// Update the queue so that it's by priority
 			untreated_patient_queue->update(clock);
-
-			// See if the doctor queue is empty
-			// If they finish patient, push to finished_patient_queue
-			// If not, add patient with the highest number
-			// clear_doctor(clock);
 			find_doctor(clock);
 		}
 	}
 
+	/* Display results to user following simulation */
 	void show_result() {
-		// Determine average visit time
+
+		// Calculate and show average visit time
 		average_visit_time = calculate_average_wait_time();
 		std::cout << " " << std::endl;
 		std::cout << "---------- SIMULATION COMPLETE ----------" << std::endl;
 		std::cout << " " << std::endl;
 		std::cout << "Average Visit Time: " << average_visit_time << " mins" << std::endl;
 		std::cout << " " << std::endl;
+
+		// Show user the treated patients if requested
 		std::cout << "Press 0 to exit. Press 1 to see the treated residents." << std::endl;
 		int menu_options;
 		std::cin >> menu_options;
 		if (menu_options == 1) {
-			// Display treated patient names
-			// Let user choose patient by name
-			// Or let user leave screen
-			// Display that patient's information an loop back
 			std::cout << " " << std::endl;
 			std::cout << "---------- TREATED PATIENTS ----------" << std::endl;
 			std::cout << " " << std::endl;
@@ -126,6 +120,8 @@ public:
 				}
 			}
 		}
+
+		// Show user patient records as requested
 		bool view = true;
 		if (menu_options == 0) {
 			std::cout << " " << std::endl;
@@ -156,6 +152,7 @@ public:
 		}
 	}
 
+	/* Push the requested numbers and types of staff requested to the staff vector */
 	void create_staff() {
 		for (int i = 0; i < number_of_doctors; i++) {
 			staff_vector.push_back(new Doctor());
@@ -165,10 +162,15 @@ public:
 		}
 	}
 
+	/* Create a map with civilian names from file */
 	std::map<int, patient*> creating_civilians() {
+
+		// Open files
 		std::map<int, patient*> civilian_map;
 		std::ifstream file1("FirstNames.txt");
 		std::ifstream file2("LastNames.txt");
+
+		// Create patient objects for each civilian and add patient objects to the map
 		for (int i = 0; i < 2000; i++) {
 			std::string temp1;
 			std::getline(file1, temp1);
@@ -177,31 +179,50 @@ public:
 			std::string fullName = temp1 + " " + temp2;
 			civilian_map[i] = new patient(fullName, 0);
 		}
+
+		// Close files and return map
 		file1.close();
 		file2.close();
-
 		return civilian_map;
+
 	}
 
+	/* Find a doctor for patient */
 	void find_doctor(int clock) {
+
+		// Run through the staff vector
 		for (int k = 0; k < (number_of_doctors + number_of_nurses); k++) {
+
+			// Remove any completed patients from staff members using update_staff function
 			int time = (staff_vector[k]->update_staff(clock));
+
+			// Update_staff will return a visit time will return 0 if no patients treated
+			// If a patient is treated, time for them needs to be pushed to vector
 			if (time != 0) {
 				visit_times.push_back(time);
 			}
+
+			// Add new patient if there are still patients in the untreated patient queue
 			if (!untreated_patient_queue->empty()) {
+
+				// Make sure staff member is capable of taking patient
 				int patient_priority = untreated_patient_queue->get_top()->get_priority();
 				int staff_capability = staff_vector[k]->get_max_severity();
 				bool isTrue = patient_priority <= staff_capability;
 
+				// If staff is also available, remove patient from untreated queue and to staff member
 				if (staff_vector[k]->current_patient == NULL && isTrue) {
+					// pop() is a custom function that removes from the queue and staff member pointer pointed to patient
 					staff_vector[k]->current_patient = untreated_patient_queue->pop();
+					// set_treatment_time sets start time for treatment and randomizes a treatment time
 					staff_vector[k]->set_treatment_time(clock);
 				}
 			}
+
 		}
 	}
 
+	/* Take visit times from vector and calculate average wait time */
 	double calculate_average_wait_time() {
 		int sum = 0;
 		for (size_t t = 0; t < visit_times.size(); t++) {
