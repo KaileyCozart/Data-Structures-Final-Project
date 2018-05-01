@@ -36,7 +36,7 @@ private:
 	std::map<int, patient*> civilians;
 
 	// Check user input
-	int read_int(const std::string &prompt, int low, int high)
+	int read_input(const std::string &prompt, int low, int high)
 	{
 		if (low >= high)
 			throw std::invalid_argument("An invalid range was specified.");
@@ -46,10 +46,11 @@ private:
 		while (true) {
 			try {
 				while (true) {
-					// std::cout << prompt;
+					std::cout << prompt;
 					std::cin >> num;
 					if (num >= low && num <= high) {
 						std::cout << std::endl;
+						std::cin.clear();
 						return num;
 					}
 				}
@@ -71,19 +72,19 @@ public:
 
 	/* Set simulation variables based on user input */
 	void user_input() {
+
 		std::cout << "---------- EMERGENCY ROOM SIMULATION ----------" << std::endl;
 		std::cout << " " << std::endl;
 		std::cout << "Welcome to the Emergency Room Simulator for 273ville, population 2000." << std::endl;
 		std::cout << " " << std::endl;
-		std::cout << "Please enter the average number of patients that enter the emergency room per hour: " << std::endl;
-		int average_number_of_patients;
-		std::cin >> average_number_of_patients;
+
+		// Set rate of arrival
+		int average_number_of_patients = read_input("Please enter the average number of patients that enter the emergency room per hour: ", 1, 60);
 		double rate_of_arrival = average_number_of_patients / 60.0;
 		untreated_patient_queue->set_arrival_rate(rate_of_arrival);
-		std::cout << "Please enter the number of doctors that are working: " << std::endl;
-		std::cin >> number_of_doctors;
-		std::cout << "Please enter the number of nurses that are working: " << std::endl;
-		std::cin >> number_of_nurses;
+
+		number_of_doctors = read_input("Please enter the number of doctors that are working: ", 1, 1000);
+		number_of_nurses = read_input("Please enter the number of nurses that are working: ", 1, 1000);
 	}
 
 	/* Create a clock and run the simulation for each tick */
@@ -107,9 +108,7 @@ public:
 		std::cout << " " << std::endl;
 
 		// Show user the treated patients if requested
-		std::cout << "Press 0 to exit. Press 1 to see the treated residents." << std::endl;
-		int menu_options;
-		std::cin >> menu_options;
+		int menu_options = read_input("Press 0 to exit. Press 1 to see the treated residents. ", 0, 1);
 		if (menu_options == 1) {
 			std::cout << " " << std::endl;
 			std::cout << "---------- TREATED PATIENTS ----------" << std::endl;
@@ -131,17 +130,13 @@ public:
 			std::cout << " " << std::endl;
 			std::cout << "---------- VIEW PATIENT RECORD ----------" << std::endl;
 			std::cout << " " << std::endl;
-			std::cout << "Press 0 to exit. Press 1 to see the record of a treated resident." << std::endl;
-			int menu_options_patient;
-			std::cin >> menu_options_patient;
+			int menu_options_patient = read_input("Press 0 to exit. Press 1 to see the record of a treated resident. ", 0, 1);
 			if (menu_options_patient == 0) {
 				std::cout << " " << std::endl;
 				view = false;
 			}
 			if (menu_options_patient == 1) {
-				std::cout << "Enter the number next to the name of the patient record that you would like to see." << std::endl;
-				int patient_number;
-				std::cin >> patient_number;
+				int patient_number = read_input("Enter the number next to the name of the patient record that you would like to see. ", 0, 1999);
 				std::cout << " " << std::endl;
 				std::cout << "---------- REQUESTED RECORD ----------" << std::endl;
 				std::cout << " " << std::endl;
