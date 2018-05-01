@@ -232,7 +232,6 @@ public:
 
 Simulation::~Simulation() {
 	delete[] my_random;
-	delete[] untreated_patient_queue;
 }
 
 #endif SIMULATION_H_
