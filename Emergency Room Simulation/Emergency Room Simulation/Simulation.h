@@ -71,7 +71,10 @@ public:
 	}
 
 	void user_input() {
+		std::cout << "---------- EMERGENCY ROOM SIMULATION ----------" << std::endl;
+		std::cout << " " << std::endl;
 		std::cout << "Welcome to the Emergency Room Simulator for 273ville, population 2000." << std::endl;
+		std::cout << " " << std::endl;
 		std::cout << "Please enter the average number of patients that enter the emergency room per hour: " << std::endl;
 		int average_number_of_patients;
 		std::cin >> average_number_of_patients;
@@ -101,21 +104,54 @@ public:
 	void show_result() {
 		// Determine average visit time
 		average_visit_time = calculate_average_wait_time();
-		std::cout << "The average visit time was " << average_visit_time << "." << std::endl;
+		std::cout << " " << std::endl;
+		std::cout << "---------- SIMULATION COMPLETE ----------" << std::endl;
+		std::cout << " " << std::endl;
+		std::cout << "Average Visit Time: " << average_visit_time << " mins" << std::endl;
+		std::cout << " " << std::endl;
 		std::cout << "Press 0 to exit. Press 1 to see the treated residents." << std::endl;
 		int menu_options;
 		std::cin >> menu_options;
-		// If they enter 0, the function call ends and the program terminates
-		// If they enter 1, the names are displayed
 		if (menu_options == 1) {
 			// Display treated patient names
 			// Let user choose patient by name
 			// Or let user leave screen
 			// Display that patient's information an loop back
+			std::cout << " " << std::endl;
+			std::cout << "---------- TREATED PATIENTS ----------" << std::endl;
+			std::cout << " " << std::endl;
 			for (size_t r = 0; r < civilians.size(); r++) {
 				if (civilians[r]->number_of_visits > 0) {
 					std::cout << r << " " << civilians[r]->name << std::endl;
 				}
+			}
+		}
+		bool view = true;
+		if (menu_options == 0) {
+			std::cout << " " << std::endl;
+			view = false;
+		}
+		while (view) {
+			std::cout << " " << std::endl;
+			std::cout << "---------- VIEW PATIENT RECORD ----------" << std::endl;
+			std::cout << " " << std::endl;
+			std::cout << "Press 0 to exit. Press 1 to see the record of a treated resident." << std::endl;
+			int menu_options_patient;
+			std::cin >> menu_options_patient;
+			if (menu_options_patient == 0) {
+				std::cout << " " << std::endl;
+				view = false;
+			}
+			if (menu_options_patient == 1) {
+				std::cout << "Enter the number next to the name of the patient record that you would like to see." << std::endl;
+				int patient_number;
+				std::cin >> patient_number;
+				std::cout << " " << std::endl;
+				std::cout << "---------- REQUESTED RECORD ----------" << std::endl;
+				std::cout << " " << std::endl;
+				std::cout << "Name: " << civilians[patient_number]->get_name() << std::endl;
+				std::cout << "Number of Visits: " << civilians[patient_number]->get_number_of_visits() << std::endl;
+				civilians[patient_number]->show_visit_severity();
 			}
 		}
 	}

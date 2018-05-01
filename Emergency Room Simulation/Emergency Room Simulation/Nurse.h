@@ -13,7 +13,7 @@ private:
 	int start_time = 0;
 	Random* my_random = new Random();
 public:
-	Nurse::Nurse() : Staff() {}
+	Nurse();
 	int get_max_severity() {
 		return max_severity;
 	}
@@ -33,5 +33,7 @@ public:
 			return 0;
 	}
 };
+
+Nurse::Nurse() : Staff() {}
 
 #endif NURSE_H_
