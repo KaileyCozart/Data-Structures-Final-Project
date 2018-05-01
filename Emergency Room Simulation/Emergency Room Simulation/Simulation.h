@@ -70,6 +70,8 @@ public:
 		untreated_patient_queue = new UntreatedPatientQueue(civilians);
 	}
 
+	~Simulation();
+
 	/* Set simulation variables based on user input */
 	void user_input() {
 
@@ -227,5 +229,10 @@ public:
 	}
 
 };
+
+Simulation::~Simulation() {
+	delete[] my_random;
+	delete[] untreated_patient_queue;
+}
 
 #endif SIMULATION_H_

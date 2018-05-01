@@ -17,6 +17,8 @@ public:
 
 	Doctor();
 
+	~Doctor();
+
 	int get_max_severity() {
 		return max_severity;
 	}
@@ -42,5 +44,9 @@ public:
 };
 
 Doctor::Doctor() : Staff() {}
+
+Doctor::~Doctor() {
+	delete[] my_random;
+}
 
 #endif DOCTOR_H_

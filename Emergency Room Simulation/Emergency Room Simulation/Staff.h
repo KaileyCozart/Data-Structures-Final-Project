@@ -23,6 +23,8 @@ public:
 
 	Staff();
 
+	~Staff();
+
 	virtual int get_max_severity() {
 		return max_severity;
 	}
@@ -53,5 +55,9 @@ public:
 };
 
 Staff::Staff() {}
+
+Staff::~Staff() {
+	delete[] my_random;
+}
 
 #endif STAFF_H_

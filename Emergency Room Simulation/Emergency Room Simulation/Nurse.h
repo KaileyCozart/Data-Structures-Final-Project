@@ -18,6 +18,8 @@ public:
 
 	Nurse();
 
+	~Nurse();
+
 	int get_max_severity() {
 		return max_severity;
 	}
@@ -43,5 +45,9 @@ public:
 };
 
 Nurse::Nurse() : Staff() {}
+
+Nurse::~Nurse() {
+	delete[] my_random;
+}
 
 #endif NURSE_H_
